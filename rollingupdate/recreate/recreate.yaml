@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recreate-demo
+  labels:
+    app: recreate-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: recreate-demo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: recreate-demo
+    spec:
+      containers:
+      - name: recreate-demo
+        image: argoproj/rollouts-demo:yellow
+        ports:
+          - name: http
+            containerPort: 8080
+            protocol: TCP
