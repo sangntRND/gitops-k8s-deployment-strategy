@@ -56,9 +56,18 @@ if [ $ROLLOUTS_EXISTS -eq 0 ]; then
 
   # Install Argo Rollouts
   helm repo add argo https://argoproj.github.io/argo-helm
-  helm upgrade --install argo-rollout argo/argo-rollouts --set dashboard.enabled=true -n $ROLLOUTS_NAMESPACE
+  helm repo update
+
+  # Find the file path for argo-rollouts-values.yaml
+  ROLLOUTS_VALUES_PATH=$(find . -name "argo-rollouts-values.yaml")
+
+  # Install Argo Rollouts using the custom values file
+  helm upgrade --install argo-rollouts argo/argo-rollouts \
+    -n $ROLLOUTS_NAMESPACE \
+    -f $ROLLOUTS_VALUES_PATH
 
   brew install argoproj/tap/kubectl-argo-rollouts
+
   # Optional: Wait for Argo Rollouts to be fully deployed
   echo "Waiting for Argo Rollouts components to be deployed..."
   kubectl wait --for=condition=available --timeout=600s deployment --all -n $ROLLOUTS_NAMESPACE
