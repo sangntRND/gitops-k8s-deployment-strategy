@@ -8,14 +8,14 @@ spec:
     canary:
       steps:
       - setWeight: 10
-      - pause: {duration: 1m}
+      - pause: {}
       - analysis:
           templates:
           - templateName: success-rate
           args:
           - name: service-name
             value: canary-demo
-      - setWeight: 25
+      - setWeight: 20
       - pause: {duration: 2m}
       - analysis:
           templates:
@@ -23,7 +23,7 @@ spec:
           args:
           - name: service-name
             value: canary-demo
-      - setWeight: 50
+      - setWeight: 40
       - pause: {duration: 2m}
       - analysis:
           templates:
@@ -31,7 +31,7 @@ spec:
           args:
           - name: service-name
             value: canary-demo
-      - setWeight: 75
+      - setWeight: 60
       - pause: {duration: 2m}
       - analysis:
           templates:
