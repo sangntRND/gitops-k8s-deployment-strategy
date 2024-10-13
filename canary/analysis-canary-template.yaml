@@ -3,6 +3,8 @@ kind: AnalysisTemplate
 metadata:
   name: success-rate
 spec:
+  args:
+  - name: service-name
   metrics:
   - name: success-rate
     interval: 1m
