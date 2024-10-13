@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  metrics:
+  - name: success-rate
+    interval: 1m
+    count: 2
+    successCondition: result[0] >= 0.90
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://prometheus.monitoring.svc.cluster.local:9090
+        query: |
+          sum(rate(nginx_ingress_controller_requests{controller_class="k8s.io/ingress-nginx", exported_namespace="canary", exported_service="{{ args.service-name }}", status!~"5.*"}[1m])) 
+          / 
+          sum(rate(nginx_ingress_controller_requests{controller_class="k8s.io/ingress-nginx", exported_namespace="canary", exported_service="{{ args.service-name }}"}[1m]))
