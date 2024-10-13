@@ -1,0 +1,17 @@
+controller:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+  nodeSelector:
+    ingress-ready: "true"
+  publishService:
+    enabled: true
+  service:
+    type: NodePort
+  hostPort:
+    enabled: true
+  extraArgs:
+    publish-status-address: localhost

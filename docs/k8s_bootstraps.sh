@@ -77,20 +77,54 @@ else
   echo "Argo Rollouts is already installed in namespace $ROLLOUTS_NAMESPACE"
 fi
 
-INGRESS_NGINX_EXISTS=$(kubectl get deployments -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx -o name | wc -l)
+# Check if NGINX Ingress Controller is already installed
+NGINX_NAMESPACE="ingress-nginx"
+NGINX_EXISTS=$(kubectl get deployments -n $NGINX_NAMESPACE -l app.kubernetes.io/name=ingress-nginx-controller -o name | wc -l)
 
-if [ $INGRESS_NGINX_EXISTS -eq 0 ]; then
-  # Ingress Nginx doesn't exist, proceed with installation
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+if [ $NGINX_EXISTS -eq 0 ]; then
+  # NGINX Ingress Controller doesn't exist, proceed with installation
 
-  # Wait for the Ingress controller to be ready
-  echo "Waiting for Ingress Nginx controller to be deployed..."
-  kubectl wait --namespace ingress-nginx \
-    --for=condition=available deployment \
-    --selector=app.kubernetes.io.component=controller \
-    --timeout=600s
+  # Create NGINX namespace if it doesn't exist
+  kubectl create namespace $NGINX_NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
-  echo "Ingress Nginx controller has been successfully installed in namespace ingress-nginx"
+  # Install NGINX Ingress Controller
+  NGINX_INSTALL_FILE_PATH=$(find . -name "nginx-deploy.yaml")
+  kubectl apply -f $NGINX_INSTALL_FILE_PATH
+
+  echo "NGINX Ingress Controller has been successfully installed in namespace $NGINX_NAMESPACE"
 else
-  echo "Ingress Nginx controller is already installed in namespace ingress-nginx"
+  echo "NGINX Ingress Controller is already installed in namespace $NGINX_NAMESPACE"
+fi
+
+# Apply the ServiceMonitor
+NGINX_SM_FILE_PATH=$(find . -name "nginx-service-monitor.yaml")
+kubectl apply -f $NGINX_SM_FILE_PATH
+
+echo "ServiceMonitor for NGINX Ingress Controller has been created"
+
+# Check if Prometheus Stack is already installed
+PROMETHEUS_NAMESPACE="monitoring"
+PROMETHEUS_EXISTS=$(kubectl get deployments -n $PROMETHEUS_NAMESPACE -l app.kubernetes.io/name=prometheus -o name | wc -l)
+
+if [ $PROMETHEUS_EXISTS -eq 0 ]; then
+  # Prometheus Stack doesn't exist, proceed with installation
+
+  # Create Prometheus namespace if it doesn't exist
+  kubectl create namespace $PROMETHEUS_NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+
+  # Add the Prometheus community Helm repository
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo update
+
+  # Find the file path for prometheus-stack-values.yaml
+  PROMETHEUS_VALUES_PATH=$(find . -name "prometheus-stack-values.yaml")
+
+  # Install Prometheus Stack using Helm with the values file
+  helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+    --namespace $PROMETHEUS_NAMESPACE \
+    -f $PROMETHEUS_VALUES_PATH
+
+  echo "Prometheus Stack has been successfully installed in namespace $PROMETHEUS_NAMESPACE"
+else
+  echo "Prometheus Stack is already installed in namespace $PROMETHEUS_NAMESPACE"
 fi
