@@ -19,15 +19,18 @@ ARGOCD_EXISTS=$(kubectl get deployments -n $ARGOCD_NAMESPACE -l app.kubernetes.i
 if [ $ARGOCD_EXISTS -eq 0 ]; then
   # ArgoCD doesn't exist, proceed with installation
 
-  NAMESPACE_EXISTS=$(kubectl get ns | grep $ARGOCD_NAMESPACE | wc -l)
+  # Add the ArgoCD Helm repository
+  helm repo add argo https://argoproj.github.io/argo-helm
+  helm repo update
 
   # Create Argo CD namespace if it doesn't exist
-  if [ $NAMESPACE_EXISTS -eq 0 ]; then
-    kubectl create namespace $ARGOCD_NAMESPACE
-  fi
+  kubectl create namespace $ARGOCD_NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
-  # Install Argo CD
-  kubectl apply -n $ARGOCD_NAMESPACE -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  # Install ArgoCD using Helm with the values file
+  FILE_PATH=$(find . -name "argocd-values.yaml")
+  helm upgrade --install argocd argo/argo-cd \
+    --namespace $ARGOCD_NAMESPACE \
+    -f $FILE_PATH
 
   # Optional: Wait for Argo CD to be fully deployed
   echo "Waiting for Argo CD components to be deployed..."
@@ -75,7 +78,7 @@ if [ $INGRESS_NGINX_EXISTS -eq 0 ]; then
   echo "Waiting for Ingress Nginx controller to be deployed..."
   kubectl wait --namespace ingress-nginx \
     --for=condition=available deployment \
-    --selector=app.kubernetes.io/component=controller \
+    --selector=app.kubernetes.io.component=controller \
     --timeout=600s
 
   echo "Ingress Nginx controller has been successfully installed in namespace ingress-nginx"
