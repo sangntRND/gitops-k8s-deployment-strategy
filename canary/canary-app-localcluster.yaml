@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     path: canary/canary/
-    repoURL: 'https://github.com/LocTaRND/argocd.git'
+    repoURL: 'https://github.com/sangntRND/gitops-k8s-deployment-strategy.git'
     targetRevision: main
   destination:
     namespace: canary
