@@ -5,7 +5,7 @@ metadata:
   labels:
     app: bluegreen-demo
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: bluegreen-demo
   ports:
@@ -22,7 +22,7 @@ metadata:
   labels:
     app: bluegreen-demo
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: bluegreen-demo
   ports:

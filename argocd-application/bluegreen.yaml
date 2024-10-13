@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    path: bluegreen/bluegreen/
+    path: bluegreen/
     repoURL: 'https://github.com/sangntRND/gitops-k8s-deployment-strategy.git'
     targetRevision: main
   destination:
