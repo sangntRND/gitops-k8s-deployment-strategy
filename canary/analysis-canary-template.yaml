@@ -10,7 +10,7 @@ spec:
     interval: 1m
     count: 2
     successCondition: result[0] >= 0.90
-    failureLimit: 2
+    failureLimit: 1
     provider:
       prometheus:
         address: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
