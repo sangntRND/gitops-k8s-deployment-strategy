@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Create the cluster with name personal-kind-cluster via kind if it doesn't exist
+if [ $(kind get clusters | grep -c "personal-kind-cluster") -eq 0 ]; then
+  # Find the file path to see where it is in the source code
+  FILE_PATH=$(find . -name "kind-config.yaml")
+  kind create cluster --name personal-kind-cluster --config $FILE_PATH
+fi
 # Change the k8s kubecontext 
 kubectl config use-context kind-personal-kind-cluster
 
@@ -57,4 +63,22 @@ if [ $ROLLOUTS_EXISTS -eq 0 ]; then
   echo "Argo Rollouts has been successfully installed in namespace $ROLLOUTS_NAMESPACE"
 else
   echo "Argo Rollouts is already installed in namespace $ROLLOUTS_NAMESPACE"
+fi
+
+INGRESS_NGINX_EXISTS=$(kubectl get deployments -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx -o name | wc -l)
+
+if [ $INGRESS_NGINX_EXISTS -eq 0 ]; then
+  # Ingress Nginx doesn't exist, proceed with installation
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+  # Wait for the Ingress controller to be ready
+  echo "Waiting for Ingress Nginx controller to be deployed..."
+  kubectl wait --namespace ingress-nginx \
+    --for=condition=available deployment \
+    --selector=app.kubernetes.io/component=controller \
+    --timeout=600s
+
+  echo "Ingress Nginx controller has been successfully installed in namespace ingress-nginx"
+else
+  echo "Ingress Nginx controller is already installed in namespace ingress-nginx"
 fi
