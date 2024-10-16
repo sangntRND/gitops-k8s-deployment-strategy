@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: rollingupdate-demo
-        image: nginx:1.25.2
+        image: argoproj/rollouts-demo:yellow
         ports:
           - name: http
             containerPort: 80
