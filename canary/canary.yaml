@@ -21,7 +21,7 @@ spec:
           - templateName: success-rate
           args:
           - name: service-name
-            value: canary-demo-canary
+            value: canary-demo-stable
       - setWeight: 40
       - pause: {duration: 2m}
       - analysis:
@@ -29,7 +29,7 @@ spec:
           - templateName: success-rate
           args:
           - name: service-name
-            value: canary-demo-canary
+            value: canary-demo-stable
       - setWeight: 60
       - pause: {duration: 2m}
       - analysis:
@@ -37,7 +37,7 @@ spec:
           - templateName: success-rate
           args:
           - name: service-name
-            value: canary-demo-canary
+            value: canary-demo-stable
       - setWeight: 100
   revisionHistoryLimit: 2
   selector:
