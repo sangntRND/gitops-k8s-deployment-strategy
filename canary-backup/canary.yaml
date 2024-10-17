@@ -6,11 +6,6 @@ spec:
   replicas: 10
   strategy:
     canary:
-      canaryService: canary-demo-canary
-      stableService: canary-demo-stable
-      trafficRouting:
-        nginx:
-          stableIngress: canary-ingress
       steps:
       - setWeight: 10
       - pause: {}
@@ -21,7 +16,7 @@ spec:
           - templateName: success-rate
           args:
           - name: service-name
-            value: canary-demo-canary
+            value: canary-demo
       - setWeight: 40
       - pause: {duration: 2m}
       - analysis:
@@ -29,7 +24,7 @@ spec:
           - templateName: success-rate
           args:
           - name: service-name
-            value: canary-demo-canary
+            value: canary-demo
       - setWeight: 60
       - pause: {duration: 2m}
       - analysis:
@@ -37,7 +32,7 @@ spec:
           - templateName: success-rate
           args:
           - name: service-name
-            value: canary-demo-canary
+            value: canary-demo
       - setWeight: 100
   revisionHistoryLimit: 2
   selector:
