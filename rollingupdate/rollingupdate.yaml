@@ -12,7 +12,7 @@ spec:
   strategy: 
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 100%
+      maxUnavailable: 0%
       maxSurge: 100%
   template:
     metadata:
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: rollingupdate-demo
-        image: argoproj/rollouts-demo:yellow
+        image: argoproj/rollouts-demo:blue
         ports:
           - name: http
             containerPort: 8080
