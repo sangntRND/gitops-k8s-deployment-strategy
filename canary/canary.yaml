@@ -15,7 +15,7 @@ spec:
       - setWeight: 10
       - pause: {}
       - setWeight: 20
-      - pause: {duration: 2m}
+      - pause: {duration: 1m}
       - analysis:
           templates:
           - templateName: success-rate
@@ -23,7 +23,7 @@ spec:
           - name: service-name
             value: canary-demo-stable
       - setWeight: 40
-      - pause: {duration: 2m}
+      - pause: {duration: 1m}
       - analysis:
           templates:
           - templateName: success-rate
@@ -31,7 +31,7 @@ spec:
           - name: service-name
             value: canary-demo-stable
       - setWeight: 60
-      - pause: {duration: 2m}
+      - pause: {duration: 1m}
       - analysis:
           templates:
           - templateName: success-rate
@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
       - name: canary-demo
-        image: argoproj/rollouts-demo:yellow
+        image: argoproj/rollouts-demo:blue
         ports:
         - name: http
           containerPort: 8080
